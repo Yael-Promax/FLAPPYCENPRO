@@ -17,23 +17,33 @@
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
   const sfx = window.FlappyAudio;
-  const DPR = Math.min(window.devicePixelRatio || 1, 2);
-  canvas.width = Math.round(W * DPR);
-  canvas.height = Math.round(H * DPR);
-  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-  ctx.lineJoin = 'round';
-  ctx.lineCap = 'round';
+  let skyGrad;
 
-  const skyGrad = ctx.createLinearGradient(0, 0, 0, FLOOR_Y);
-  skyGrad.addColorStop(0, '#35b2c7');
-  skyGrad.addColorStop(0.55, '#79d8e3');
-  skyGrad.addColorStop(1, '#c2eff1');
+  function resizeCanvas() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const width = Math.round(W * dpr);
+    const height = Math.round(H * dpr);
+    if (canvas.width !== width) canvas.width = width;
+    if (canvas.height !== height) canvas.height = height;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
+    skyGrad = ctx.createLinearGradient(0, 0, 0, FLOOR_Y);
+    skyGrad.addColorStop(0, '#35b2c7');
+    skyGrad.addColorStop(0.55, '#79d8e3');
+    skyGrad.addColorStop(1, '#c2eff1');
+  }
+
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas, { passive: true });
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', resizeCanvas, { passive: true });
 
   /* ---------------------------------------------------------------
      Estado
   --------------------------------------------------------------- */
   let best = 0;
-  try { best = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10) || 0; } catch (e) {}
+  try { best = Math.max(0, parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10) || 0); } catch (e) {}
 
   let state = 'ready';        // ready | playing | dying | gameover
   let score = 0;
@@ -45,6 +55,12 @@
   let shake = 0;
   let flash = 0;
   let scorePop = 0;
+
+  function emitState() {
+    window.dispatchEvent(new CustomEvent('flappy:state', {
+      detail: { state, score, best }
+    }));
+  }
 
   const bird = { x: BIRD_X, y: 330, vy: 0, rot: 0, wing: 0, wingSpeed: 9 };
   let pipes = [];
@@ -126,6 +142,8 @@
     bird.rot = 0;
     bird.wing = 0;
     bird.wingSpeed = 9;
+    gameOverAt = -99;
+    emitState();
   }
 
   function startGame() {
@@ -135,10 +153,17 @@
     pipes = [];
     particles = [];
     spawnDist = 140;
+    groundOff = 0;
+    shake = 0;
+    flash = 0;
+    scorePop = 0;
     bird.y = 300;
     bird.vy = 0;
     bird.rot = 0;
     bird.wing = 0;
+    bird.wingSpeed = 9;
+    gameOverAt = -99;
+    emitState();
   }
 
   function flap() {
@@ -162,6 +187,7 @@
       newBest = true;
       try { localStorage.setItem(STORAGE_KEY, String(best)); } catch (e) {}
     }
+    emitState();
   }
 
   function spawnFeathers() {
@@ -229,6 +255,7 @@
         state = 'gameover';
         gameOverAt = t;
         shake = Math.max(shake, 7);
+        emitState();
       }
     }
   }
@@ -264,6 +291,8 @@
         score++;
         scorePop = 1;
         sfx.score();
+        window.dispatchEvent(new CustomEvent('flappy:score', { detail: { score } }));
+        emitState();
       }
 
       if (p.x < bird.x + 48 && p.x + PIPE_W > bird.x - 48) {
@@ -301,18 +330,23 @@
       flap();
     } else if (state === 'playing') {
       flap();
-    } else if (state === 'gameover' && t - gameOverAt > 0.6) {
-      resetGame();
+    } else if (state === 'gameover') {
+      startGame();
+      flap();
     }
   }
 
   canvas.addEventListener('pointerdown', (e) => {
     e.preventDefault();
+    canvas.focus({ preventScroll: true });
     press();
   });
 
   window.addEventListener('keydown', (e) => {
     if (e.repeat) return;
+    if (document.getElementById('playerDialog').open) return;
+    const target = e.target;
+    if (target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test(target.tagName))) return;
     if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
       e.preventDefault();
       press();
@@ -323,7 +357,12 @@
     }
   });
 
-  window.addEventListener('blur', () => { /* sin pausa: el dt está acotado */ });
+  document.getElementById('retryButton').addEventListener('click', () => {
+    if (state !== 'gameover') return;
+    sfx.unlock();
+    startGame();
+    flap();
+  });
 
   /* ---------------------------------------------------------------
      Dibujo: utilidades
@@ -534,7 +573,11 @@
      Dibujo: pájaro
   --------------------------------------------------------------- */
   function drawBird() {
-    if (!SPR.ready) { drawBirdClassic(); return; }
+    const character = window.FlappyUI.getCharacter();
+    if (character !== 'friend' || !SPR.ready) {
+      drawBirdClassic(character);
+      return;
+    }
 
     const s = SPR.height / SPR.pngH;
     const amp = 0.5 - 0.5 * Math.cos(bird.wing);
@@ -587,7 +630,26 @@
     ctx.restore();
   }
 
-  function drawBirdClassic() {
+  function drawBirdClassic(character) {
+    const styles = {
+      classic: {
+        light: '#fff6b0', mid: '#ffd93b', dark: '#f2a41c', edge: '#8a5a16',
+        wing: '#fff8dc', wingEdge: '#cf8f1e', beak: '#ff9412', beakEdge: '#c25a08',
+        tail: '#f7b733', cheek: 'rgba(255, 130, 50, .32)'
+      },
+      laguna: {
+        light: '#d8fbff', mid: '#55cde0', dark: '#1285ad', edge: '#07516f',
+        wing: '#e6fcff', wingEdge: '#1683a6', beak: '#ffbd46', beakEdge: '#b86b16',
+        tail: '#37b8d4', cheek: 'rgba(255, 122, 128, .4)'
+      },
+      mango: {
+        light: '#ffe3c3', mid: '#ff9b55', dark: '#e34c4a', edge: '#802d3d',
+        wing: '#fff0d8', wingEdge: '#ba5045', beak: '#ffd05e', beakEdge: '#b8751a',
+        tail: '#f17651', cheek: 'rgba(255, 225, 174, .48)'
+      }
+    };
+    const style = styles[character] || styles.classic;
+
     ctx.save();
     ctx.translate(bird.x, bird.y);
     ctx.rotate(bird.rot);
@@ -605,19 +667,19 @@
     ctx.quadraticCurveTo(-18, -1.5, -21, 2.5);
     ctx.quadraticCurveTo(-17, 2.5, -12, 1.5);
     ctx.closePath();
-    ctx.fillStyle = '#f7b733';
-    ctx.strokeStyle = '#8a5a16';
+    ctx.fillStyle = style.tail;
+    ctx.strokeStyle = style.edge;
     ctx.lineWidth = 2;
     ctx.fill();
     ctx.stroke();
 
     // cuerpo
     const bodyG = ctx.createRadialGradient(-5, -7, 3, 0, 0, 19);
-    bodyG.addColorStop(0, '#fff6b0');
-    bodyG.addColorStop(0.5, '#ffd93b');
-    bodyG.addColorStop(1, '#f2a41c');
+    bodyG.addColorStop(0, style.light);
+    bodyG.addColorStop(0.5, style.mid);
+    bodyG.addColorStop(1, style.dark);
     ctx.fillStyle = bodyG;
-    ctx.strokeStyle = '#8a5a16';
+    ctx.strokeStyle = style.edge;
     ctx.lineWidth = 2.2;
     ctx.beginPath();
     ctx.ellipse(0, 0, 16, 13.5, 0, 0, Math.PI * 2);
@@ -631,15 +693,15 @@
     ctx.rotate(-0.32 + Math.sin(bird.wing) * 0.24);
     ctx.beginPath();
     ctx.ellipse(0, wing * 0.35, 8.6, 5.6, 0, 0, Math.PI * 2);
-    ctx.fillStyle = '#fff8dc';
+    ctx.fillStyle = style.wing;
     ctx.fill();
-    ctx.strokeStyle = '#cf8f1e';
+    ctx.strokeStyle = style.wingEdge;
     ctx.lineWidth = 1.9;
     ctx.stroke();
     ctx.beginPath();
     ctx.moveTo(-3.5, wing * 0.35 + 1.6);
     ctx.lineTo(3.5, wing * 0.35 + 1.6);
-    ctx.strokeStyle = 'rgba(207, 143, 30, .4)';
+    ctx.strokeStyle = style.wingEdge;
     ctx.lineWidth = 1.2;
     ctx.stroke();
     ctx.restore();
@@ -647,7 +709,7 @@
     // mejilla
     ctx.beginPath();
     ctx.arc(2.5, 2.5, 2.5, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255, 130, 50, .32)';
+    ctx.fillStyle = style.cheek;
     ctx.fill();
 
     // ojo
@@ -655,7 +717,7 @@
     ctx.arc(6, -5.8, 5.1, 0, Math.PI * 2);
     ctx.fillStyle = '#fff';
     ctx.fill();
-    ctx.strokeStyle = '#8a5a16';
+    ctx.strokeStyle = style.edge;
     ctx.lineWidth = 1.6;
     ctx.stroke();
 
@@ -675,9 +737,9 @@
     ctx.quadraticCurveTo(20, -1.5, 19.5, 2.5);
     ctx.quadraticCurveTo(16, 5.5, 10.5, 3);
     ctx.closePath();
-    ctx.fillStyle = '#ff9412';
+    ctx.fillStyle = style.beak;
     ctx.fill();
-    ctx.strokeStyle = '#c25a08';
+    ctx.strokeStyle = style.beakEdge;
     ctx.lineWidth = 1.7;
     ctx.stroke();
 
@@ -687,7 +749,7 @@
     ctx.quadraticCurveTo(0.5, -16.5, 3.5, -16);
     ctx.moveTo(5, -12.8);
     ctx.quadraticCurveTo(6, -16, 9, -15);
-    ctx.strokeStyle = '#8a5a16';
+    ctx.strokeStyle = style.edge;
     ctx.lineWidth = 1.6;
     ctx.stroke();
 
@@ -715,7 +777,7 @@
     ctx.shadowColor = 'rgba(0, 0, 0, .28)';
     ctx.shadowBlur = 14;
     ctx.shadowOffsetY = 6;
-    text('FLAPPY BIRD', W / 2, 152 + Math.sin(t * 2) * 2, 39, '#ffffff', '#2f6b4f', 9);
+    text('FLAPPY CEN PRO', W / 2, 152 + Math.sin(t * 2) * 2, 34, '#ffffff', '#2f6b4f', 8);
     ctx.restore();
 
     text('RÉCORD: ' + best, W / 2, 198, 17, 'rgba(255, 255, 255, .95)', 'rgba(35, 70, 60, .45)', 5);
@@ -731,8 +793,8 @@
     ctx.stroke();
     ctx.restore();
 
-    text('TOCA O PULSA  ESPACIO', W / 2, 473, 15, '#2f6b4f');
-    text('M: silencio   ·   R: reiniciar', W / 2, 520, 12, 'rgba(255, 255, 255, .92)', 'rgba(38, 86, 58, .5)', 4);
+    text('TOCA PARA VOLAR', W / 2, 473, 15, '#2f6b4f');
+    text('ESPACIO · ↑ · W TAMBIÉN VUELAN', W / 2, 520, 11, 'rgba(255, 255, 255, .92)', 'rgba(38, 86, 58, .5)', 4);
   }
 
   function starPath(cx, cy, spikes, outer, inner) {
@@ -814,7 +876,7 @@
   }
 
   function drawGameOver() {
-    const px = 45, py = 198, pw = 270, ph = 214;
+    const px = 45, py = 177, pw = 270, ph = 277;
 
     ctx.save();
     ctx.shadowColor = 'rgba(0, 0, 0, .38)';
@@ -863,26 +925,24 @@
 
     drawMedal(262, 306, 33, score);
 
-    // botón
-    const bx = W / 2 - 72, by = 364, bw = 144, bh = 38;
-    ctx.save();
-    ctx.shadowColor = 'rgba(180, 110, 20, .45)';
-    ctx.shadowBlur = 10;
-    ctx.shadowOffsetY = 3;
-    const btnG = ctx.createLinearGradient(0, by, 0, by + bh);
-    btnG.addColorStop(0, '#ffb64d');
-    btnG.addColorStop(1, '#eb9025');
-    ctx.fillStyle = btnG;
-    rr(bx, by, bw, bh, 19);
-    ctx.fill();
-    ctx.restore();
-
-    ctx.strokeStyle = 'rgba(255, 255, 255, .55)';
-    ctx.lineWidth = 2;
-    rr(bx + 2, by + 2, bw - 4, bh - 4, 17);
-    ctx.stroke();
-
-    text('REINTENTAR', W / 2, by + bh / 2 + 1, 15, '#ffffff');
+    const buttons = window.matchMedia('(orientation: landscape) and (max-height: 520px)').matches ? [] : [
+      { y: 364, top: '#ffb64d', bottom: '#eb9025', label: 'OTRA PARTIDA', color: '#ffffff' },
+      { y: 410, top: '#ffffff', bottom: '#e9f7f1', label: 'COMPARTIR RETO', color: '#24573f' }
+    ];
+    for (const button of buttons) {
+      const bx = W / 2 - 72, bw = 144, bh = 38;
+      const gradient = ctx.createLinearGradient(0, button.y, 0, button.y + bh);
+      gradient.addColorStop(0, button.top);
+      gradient.addColorStop(1, button.bottom);
+      ctx.fillStyle = gradient;
+      rr(bx, button.y, bw, bh, 19);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255, 255, 255, .65)';
+      ctx.lineWidth = 2;
+      rr(bx + 2, button.y + 2, bw - 4, bh - 4, 17);
+      ctx.stroke();
+      text(button.label, W / 2, button.y + bh / 2 + 1, 13, button.color);
+    }
   }
 
   /* ---------------------------------------------------------------
@@ -922,22 +982,36 @@
      Bucle principal
   --------------------------------------------------------------- */
   let last = performance.now();
+  let frameId = 0;
+
+  function scheduleFrame() {
+    if (!frameId && !document.hidden) frameId = requestAnimationFrame(frame);
+  }
 
   function frame(now) {
+    frameId = 0;
+    if (document.hidden) return;
     let dt = (now - last) / 1000;
     last = now;
     if (dt > 0.05) dt = 0.05;
     if (dt < 0) dt = 0;
 
-    update(dt);
+    if (!document.getElementById('playerDialog').open) update(dt);
     render();
 
-    requestAnimationFrame(frame);
+    scheduleFrame();
   }
 
   document.addEventListener('visibilitychange', () => {
     last = performance.now();
+    if (document.hidden) {
+      if (frameId) cancelAnimationFrame(frameId);
+      frameId = 0;
+    } else {
+      scheduleFrame();
+    }
   });
 
-  requestAnimationFrame(frame);
+  emitState();
+  scheduleFrame();
 })();
