@@ -1,0 +1,14 @@
+<svg width="100%" height="100%" viewBox="0 0 450 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- Isotype (Transparent Cube) -->
+  <svg x="0" y="12" width="100" height="110" viewBox="0 0 3630 3999" style="filter: drop-shadow(0 0 4px rgba(236,136,57,0.4));">
+    <g>
+      <path d="M1814.936,0l1814.936,833.417l0,2229.388l-1867.48,935.939l-1762.391,-858.95l-0,-2305.173l1814.936,-834.621Zm277.527,1783.34l-555.055,-346.558l12.659,620.958l537.794,357.954l4.601,-632.354Z" fill="#ec8839"/>
+    </g>
+    <path d="M3534.238,911.917l13.662,2100.632l-689.116,333.8l-47.054,-2004.808l722.508,-429.623Zm-2109.184,537.658l0,602.379l-647.416,435.313l-18.164,-624.56l665.581,-413.131Zm-53.918,1486.039l731.59,-403.949l670.193,856.343l-987.873,485.374l-413.91,-937.768Z" fill="#e66425" fill-rule="nonzero"/>
+    <path d="M1098.301,510.447l1628.184,849.848l41.365,1850.037l-587.565,-741.627l4.04,-751.972l-638.321,-407.882l-447.703,-798.405Zm-435.014,1363.507l24.649,746.76l578.535,324.425l409.006,896.453l-1569.707,-785.698l-23.513,-2045.131c0,0 385.585,530.498 581.03,863.19Z" fill="#e6562c" fill-rule="nonzero"/>
+  </svg>
+
+  <!-- Logotype -->
+  <text x="450" y="74" font-family="'Outfit', sans-serif" font-weight="800" font-size="58" fill="#2a1008" letter-spacing="9" text-anchor="end">LUXIMIA</text>
+  <text x="450" y="118" font-family="'Outfit', sans-serif" font-weight="600" font-size="21" fill="#2a1008" letter-spacing="4" text-anchor="end">PROJECTS WITH SOUL</text>
+</svg>

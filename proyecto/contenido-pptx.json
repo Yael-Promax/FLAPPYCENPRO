@@ -1,0 +1,296 @@
+{
+  "title": "Del trabajo manual al trabajo sistematizado",
+  "subtitle": "Launcher, ecosistema y accesos",
+  "slides": [
+    {
+      "type": "cover",
+      "kicker": "Avance de proyecto · Octubre 2026",
+      "title": "Del trabajo manual al trabajo sistematizado",
+      "lead": "Launcher, ecosistema y accesos: qué se construyó, qué sigue y qué falta revisar.",
+      "chips": ["Cosmos en operación", "11 procesos mapeados", "Una sola puerta de acceso"],
+      "note": ""
+    },
+    {
+      "type": "content",
+      "section": "El punto de partida",
+      "kicker": "El punto de partida",
+      "title": "El costo real de trabajar a mano",
+      "lead": "Los problemas no son falta de software: son procesos que dependen de la memoria de las personas.",
+      "blocks": [
+        {"type": "cards", "cols": 3, "items": [
+          {"h": "Doble captura", "p": "El mismo dato se escribe dos veces en sistemas distintos."},
+          {"h": "Procesos manuales", "p": "Cada permiso o aprobación se pide de palabra o por correo."},
+          {"h": "Documentos dispersos", "p": "Nadie sabe con certeza cuál es la versión oficial."},
+          {"h": "Reportes que no cuadran", "p": "Cada área lleva su propio Excel. Conciliar cuesta más que operar."},
+          {"h": "Proceso en la persona", "p": "Si esa persona falta, el proceso se detiene."},
+          {"h": "Software cerrado", "p": "Los sistemas no se hablan entre sí y se paga por módulos que no se usan."}
+        ]},
+        {"type": "note", "tone": "accent", "text": "La trampa: digitalizar el desorden solo lo hace más rápido."}
+      ]
+    },
+    {
+      "type": "content",
+      "section": "La idea",
+      "kicker": "La idea",
+      "title": "Un ecosistema, no un monolito",
+      "lead": "Cada aplicación tiene una responsabilidad clara y toda la información viaja por acuerdos entre sistemas, no por copias manuales.",
+      "blocks": [
+        {"type": "bullets", "cols": 1, "items": [
+          "**Personas → Authentik —** una sola puerta de entrada.",
+          "**Paperless** guarda los documentos; **ERPNext** lleva la contabilidad; **Naboo-Finance** programa los pagos.",
+          "**n8n** conecta los sistemas; **Mustafar** lee documentos; **Kamino** muestra reportes.",
+          "Cada sistema conserva su información: nadie escribe en la base del vecino."
+        ]}
+      ]
+    },
+    {
+      "type": "content",
+      "section": "Las aplicaciones",
+      "kicker": "Las aplicaciones",
+      "title": "Qué hace cada aplicación",
+      "lead": "Todas entran por la misma puerta y cada una tiene un papel claro.",
+      "blocks": [
+        {"type": "cards", "cols": 5, "items": [
+          {"h": "Authentik", "p": "Decide quién entra y a qué tiene acceso."},
+          {"h": "Cosmos", "p": "El launcher con todas las aplicaciones."},
+          {"h": "Paperless", "p": "Guarda y encuentra los documentos."},
+          {"h": "Mustafar", "p": "Lee documentos y extrae sus datos."},
+          {"h": "n8n", "p": "Conecta las aplicaciones entre sí."},
+          {"h": "ERPNext", "p": "Contabilidad, compras e inventario."},
+          {"h": "Naboo-Finance", "p": "Programa y sigue los pagos de la empresa."},
+          {"h": "JarJar", "p": "Altas de personas y asistente interno."},
+          {"h": "Kamino", "p": "Reportes y tableros de consulta."},
+          {"h": "EstelaPLD", "p": "Prevención de lavado de dinero."}
+        ]}
+      ]
+    },
+    {
+      "type": "content",
+      "section": "El launcher",
+      "kicker": "El launcher",
+      "title": "Cosmos: una sola puerta",
+      "lead": "Antes cada persona guardaba enlaces y recordaba contraseñas distintas. Hoy hay una sola entrada que muestra lo que cada quien puede usar.",
+      "blocks": [
+        {"type": "bullets", "cols": 1, "items": [
+          "**Una sola dirección —** se comparte un único enlace; las direcciones directas quedan solo para soporte.",
+          "**Cada quien ve lo suyo —** el launcher muestra únicamente las aplicaciones autorizadas para esa persona.",
+          "**Cosmos no da permisos —** quien pierde el acceso pierde la tarjeta y el permiso, en un solo lugar."
+        ]}
+      ]
+    },
+    {
+      "type": "content",
+      "section": "Identidad y acceso",
+      "kicker": "Identidad y acceso",
+      "title": "Una sola fuente para saber quién entra",
+      "lead": "La persona pertenece a un puesto, el puesto a un área y el área define qué puede usar. La aplicación solo recibe la respuesta.",
+      "blocks": [
+        {"type": "note", "tone": "plain", "text": "Persona → Puesto → Área → Permisos → Aplicación."},
+        {"type": "cards", "cols": 4, "items": [
+          {"h": "Herencia", "p": "Quien está en un puesto hereda lo del área. Nunca al revés."},
+          {"h": "Una respuesta", "p": "Cada aplicación recibe la lista de lo que esa persona puede usar."},
+          {"h": "Si algo falla, no entra", "p": "Sin confirmación, no se abre nada. Nunca se muestra de más por error."},
+          {"h": "Solo enlaces seguros", "p": "Se abren únicamente enlaces verificados y permitidos."}
+        ]}
+      ]
+    },
+    {
+      "type": "content",
+      "section": "Mapa de grupos",
+      "kicker": "Mapa de grupos",
+      "title": "El estándar: área, puesto y jefe",
+      "lead": "Cinco reglas para que un cambio de personal no obligue a tocar las aplicaciones.",
+      "blocks": [
+        {"type": "cards", "cols": 3, "items": [
+          {"h": "01 · El área es el paraguas", "p": "Agrupa lo que comparten todos los puestos del área."},
+          {"h": "02 · El puesto es donde va la persona", "p": "Cada persona pertenece a un puesto, no directamente al área."},
+          {"h": "03 · Cada área tiene un jefe", "p": "El jefe manda en su área y administra a su gente."},
+          {"h": "04 · Lo sensible queda en el puesto", "p": "La información delicada se da a puestos específicos, no a toda el área."},
+          {"h": "05 · Externos solo consultan", "p": "Pueden ver y descargar, pero no administrar ni cambiar datos."}
+        ]},
+        {"type": "note", "tone": "accent", "text": "Una persona en un puesto hereda lo del área y conserva lo sensible de su puesto."}
+      ]
+    },
+    {
+      "type": "content",
+      "section": "Mapa de grupos",
+      "kicker": "Mapa de grupos",
+      "title": "Mapa actual: las áreas de la empresa",
+      "lead": "Hoy el mapa se organiza por área y por puesto.",
+      "blocks": [
+        {"type": "cards", "cols": 3, "items": [
+          {"h": "Banco de Materiales", "p": "Compras, almacén, caja y seguridad."},
+          {"h": "Jurídico", "p": "Asuntos legales y prevención de lavado."},
+          {"h": "Finanzas", "p": "Contabilidad, tesorería, auditoría y dirección."},
+          {"h": "Ventas", "p": "Puestos y responsables todavía por definir."},
+          {"h": "Externos", "p": "Invitados, practicantes y becarios."},
+          {"h": "Auditoría externa", "p": "SAT y PLD: solo consulta y descarga."}
+        ]},
+        {"type": "note", "tone": "plain", "text": "Cinco áreas ordenadas · una por ordenar."}
+      ]
+    },
+    {
+      "type": "content",
+      "section": "El método",
+      "kicker": "El método",
+      "title": "Cómo se construyó el mapa",
+      "lead": "No se copió un manual ni se adivinó: se recopiló la información, se cruzó y se marcó lo que falta.",
+      "blocks": [
+        {"type": "cards", "cols": 3, "items": [
+          {"h": "01 · Definir el alcance", "p": "Qué se documenta y qué queda fuera."},
+          {"h": "02 · Recopilar", "p": "Información de cada área, con su fuente."},
+          {"h": "03 · Cruzar", "p": "Se comparó lo que dice cada sistema."},
+          {"h": "04 · Marcar pendientes", "p": "Cada pendiente con dueño y criterio para cerrarlo."},
+          {"h": "05 · Proponer", "p": "Un proceso objetivo para cada caso."},
+          {"h": "06 · Entregar", "p": "Todo documentado y versionado."}
+        ]},
+        {"type": "note", "tone": "accent", "text": "Ninguna propuesta se tomó como aprobada: el negocio decide qué se adopta."}
+      ]
+    },
+    {
+      "type": "content",
+      "section": "El método",
+      "kicker": "El método",
+      "title": "Qué se revisó, y qué encontramos",
+      "lead": "Se revisaron tres sistemas y se documentaron once procesos. Lo que no se pudo ver quedó marcado como pendiente.",
+      "blocks": [
+        {"type": "stats", "items": [
+          {"n": "11", "l": "procesos con diagnóstico y propuesta"},
+          {"n": "133", "l": "funciones revisadas una por una"},
+          {"n": "28", "l": "pendientes con dueño y criterio"},
+          {"n": "10", "l": "supuestos por validar"}
+        ]},
+        {"type": "cards", "cols": 3, "items": [
+          {"h": "EnKontrol", "p": "Siete módulos revisados: compras, clientes, facturación, bancos y contabilidad. Inventarios quedó pendiente."},
+          {"h": "Contpaq", "p": "Cinco empresas revisadas. La contabilidad tiene cobertura parcial y la nómina quedó pendiente."},
+          {"h": "Naboo", "p": "59 funciones clasificadas en ambiente de desarrollo, sin producción verificada."}
+        ]}
+      ]
+    },
+    {
+      "type": "content",
+      "section": "Procesos",
+      "kicker": "Procesos",
+      "title": "Once procesos, un mismo veredicto",
+      "lead": "Todos tienen diagnóstico y propuesta. Ninguno se declaró terminado todavía.",
+      "blocks": [
+        {"type": "table", "widths": [0.66, 0.34], "head": ["Proceso", "Estado"], "rows": [
+          ["Registro contable", "En revisión"],
+          ["Cierre mensual", "En revisión"],
+          ["Fiscal electrónico", "En revisión"],
+          ["Compra a pago", "En revisión"],
+          ["Gastos por comprobar", "En revisión"],
+          ["Venta y cobranza", "En revisión"],
+          ["Tesorería y bancos", "En revisión"],
+          ["Nómina", "Sin información"],
+          ["Inventarios", "Sin información"],
+          ["Presupuesto y proyecto", "En revisión"],
+          ["Activos fijos", "En revisión"]
+        ]},
+        {"type": "note", "tone": "warn", "text": "9 en revisión · 2 sin información. Decirlo a tiempo evita migrar a ciegas."}
+      ]
+    },
+    {
+      "type": "content",
+      "section": "Procesos",
+      "kicker": "Procesos",
+      "title": "Del proceso actual al proceso objetivo",
+      "lead": "La propuesta conserva el resultado y el control, y elimina la captura repetida. Es una propuesta: el negocio decide qué se adopta.",
+      "blocks": [
+        {"type": "bullets", "cols": 1, "items": [
+          "**Compra a pago —** necesidad → orden → recepción → factura → pago → registro.",
+          "**Tesorería y bancos —** programación → autorización → pago → conciliación.",
+          "**Registro contable —** hecho económico → validación → asiento → cierre.",
+          "**Venta y cobranza —** acuerdo → factura → cobro → cartera."
+        ]},
+        {"type": "cards", "cols": 3, "items": [
+          {"h": "Un dato, una captura", "p": "El origen captura una vez; el receptor solo confirma."},
+          {"h": "Un documento, un lugar", "p": "El original se guarda una sola vez y se referencia."},
+          {"h": "Quien prepara, no autoriza", "p": "La aprobación la da otra persona, por diseño."}
+        ]}
+      ]
+    },
+    {
+      "type": "content",
+      "section": "Apps propuestas",
+      "kicker": "Aplicaciones propuestas",
+      "title": "Qué proponemos operar, y en qué orden",
+      "lead": "No se trata de encender todo: cada aplicación debe tener un papel claro y una prueba completa antes de usarla con datos reales.",
+      "blocks": [
+        {"type": "cards", "cols": 2, "items": [
+          {"h": "Ya funciona", "p": "Authentik, Cosmos, Paperless, Mustafar, n8n y JarJar: la base que sostiene el acceso y los documentos."},
+          {"h": "Núcleo del negocio", "p": "ERPNext y Naboo-Finance: el libro, el expediente y el pago. Falta definir quién manda en los datos y cómo se conectan."},
+          {"h": "Consulta y reportes", "p": "Kamino y los tableros de solo lectura: informan sin modificar la información."},
+          {"h": "En pausa", "p": "Lo que está detenido no se presenta como disponible."}
+        ]},
+        {"type": "cards", "cols": 2, "items": [
+          {"h": "Encendido no es operativo", "p": "Un servicio puede estar arriba y todavía no funcionar: falta probar el acceso y el flujo completo."},
+          {"h": "Cuándo pasa a operación", "p": "Cuando tiene acceso, permisos, una prueba completa y respaldo probado."}
+        ]}
+      ]
+    },
+    {
+      "type": "content",
+      "section": "Gobierno",
+      "kicker": "Gobierno",
+      "title": "Reglas que evitan el desorden",
+      "lead": "El orden no es una revisión final: es parte del diseño.",
+      "blocks": [
+        {"type": "cards", "cols": 3, "items": [
+          {"h": "01 · Identidad", "p": "Cada persona tiene una sola cuenta. Los administradores usan doble verificación."},
+          {"h": "02 · Acceso", "p": "Sin permiso, no se entra. Quitar un permiso debe quitar el acceso."},
+          {"h": "03 · Contraseñas y llaves", "p": "Nunca viven dentro del código ni se comparten por mensaje."},
+          {"h": "04 · Aislamiento", "p": "Cada aplicación conserva su información; nadie escribe en la del vecino."},
+          {"h": "05 · Revisión automática", "p": "Se comprueba que el acceso funcione y que no haya desviaciones."},
+          {"h": "06 · Cambios ordenados", "p": "Un área nueva no obliga a tocar las demás aplicaciones."}
+        ]},
+        {"type": "cards", "cols": 2, "items": [
+          {"h": "Lo que ya se revisa solo", "p": "Los accesos, la identidad y la consistencia del launcher."},
+          {"h": "Lo que falta", "p": "Pruebas por aplicación y restauración de respaldos."}
+        ]}
+      ]
+    },
+    {
+      "type": "content",
+      "section": "Estado real",
+      "kicker": "Estado real",
+      "title": "Lo que dicen los números",
+      "lead": "La foto del 13 y 14 de octubre es la única fuente para decir qué está funcionando.",
+      "blocks": [
+        {"type": "stats", "items": [
+          {"n": "11", "l": "aplicaciones con acceso único"},
+          {"n": "11", "l": "procesos documentados"},
+          {"n": "133", "l": "funciones revisadas"},
+          {"n": "1,606", "l": "pruebas del launcher, sin fallas"},
+          {"n": "35/0", "l": "verificaciones de acceso / fallas"}
+        ]},
+        {"type": "cards", "cols": 2, "items": [
+          {"h": "Lo que no está listo", "p": "ERPNext y varias aplicaciones detenidas a propósito. No se presentan como disponibles."},
+          {"h": "Lo que está arriba pero incompleto", "p": "n8n, Mustafar, EstelaPLD y Naboo-Finance aún no tienen una prueba completa. Arriba no significa listo."}
+        ]}
+      ]
+    },
+    {
+      "type": "content",
+      "section": "Decisiones",
+      "kicker": "Decisiones",
+      "title": "Cosas que nos falta decidir",
+      "lead": "Estos puntos todavía requieren información o una confirmación antes de avanzar.",
+      "blocks": [
+        {"type": "cards", "cols": 2, "items": [
+          {"h": "01 · Información de Recursos Humanos", "p": "Obtener la información necesaria de RR. HH. para completar el mapa de áreas y puestos."},
+          {"h": "02 · Confirmar información con las áreas", "p": "Validar con cada área los datos que todavía están pendientes."},
+          {"h": "03 · Validar algunos procesos", "p": "Revisar los procesos que se van a implementar antes de llevarlos a la práctica."},
+          {"h": "04 · Detalles de integración", "p": "Revisar los detalles finales de integración entre las aplicaciones."}
+        ]}
+      ]
+    },
+    {
+      "type": "closing",
+      "kicker": "",
+      "title": "Quitarle a las personas el trabajo que no aporta.",
+      "lead": "El criterio se queda en las personas. La captura repetida y el copiar y pegar se van al sistema.",
+      "note": "Gracias."
+    }
+  ]
+}
